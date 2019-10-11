@@ -10,6 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.Menu;
@@ -21,7 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static int CREATE_NEW_NOTE_CODE = 1;
-
+    private NoteAdapter noteAdapter = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 insert();
+            }
+        });
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        noteAdapter = new NoteAdapter();
+        recyclerView.setAdapter(noteAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        NoteViewModel viewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
+        viewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                noteAdapter.setNotes(notes);
             }
         });
     }
